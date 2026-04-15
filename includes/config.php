@@ -8,10 +8,10 @@ $_isLocal = ($_host === 'localhost' || str_starts_with($_host, '127.'));
 // ============================================
 //  VERİTABANI — her iki ortamda canlı DB
 // ============================================
-define('DB_HOST', 'mysql.hostinger.com'); // Hostinger Remote MySQL host — hPanel > Veritabanları > Remote MySQL'den alın
-define('DB_USER', 'BURAYA_DB_KULLANICI');
-define('DB_PASS', 'BURAYA_DB_SIFRE');
-define('DB_NAME', 'BURAYA_DB_ADI');
+define('DB_HOST', 'srv1790.hstgr.io'); // Hostinger Remote MySQL host — hPanel > Veritabanları > Remote MySQL'den alın
+define('DB_USER', 'u640814747_boyraz');
+define('DB_PASS', 'SecretKey12.Xd');
+define('DB_NAME', 'u640814747_ogretmen_app');
 
 // ============================================
 //  SITE URL — ortama göre otomatik
@@ -39,8 +39,8 @@ define('PREMIUM_MAX_EXAMS',     0);
 // ============================================
 //  GOOGLE OAuth2 — redirect URI ortama göre
 // ============================================
-define('GOOGLE_CLIENT_ID',     'BURAYA_CLIENT_ID');
-define('GOOGLE_CLIENT_SECRET', 'BURAYA_CLIENT_SECRET');
+define('GOOGLE_CLIENT_ID',     '912455363980-rsth0q92aeaq2h9qidrjfcntied2k1nd.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_SECRET', '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');
 define('GOOGLE_REDIRECT_URI',  SITE_URL . '/auth/google_callback.php');
 
 // ============================================
