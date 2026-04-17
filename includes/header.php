@@ -12,7 +12,7 @@ $initial = mb_substr($user['name'], 0, 1, 'UTF-8');
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= isset($pageTitle) ? sanitize($pageTitle) . ' — ' : '' ?>SınıfPro</title>
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/app.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="icon" href="<?= SITE_URL ?>/assets/images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
 <div id="toast-container"></div>
@@ -22,7 +22,7 @@ $initial = mb_substr($user['name'], 0, 1, 'UTF-8');
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-        <div class="logo-mark">🎓</div>
+        <img src="<?= SITE_URL ?>/assets/images/logo-icon.svg" alt="SınıfPro" width="34" height="34" style="flex-shrink:0;">
         <span>SınıfPro</span>
     </div>
     <nav class="sidebar-nav">

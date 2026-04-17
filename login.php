@@ -30,7 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Giriş Yap — SınıfPro</title>
+<title>SınıfPro — Öğretmenler için Kolay Yazılı Hazırlama Aracı</title>
+<meta name="description" content="Öğretmenler için kolay yazılı oluşturma aracıdır. Word programını kullanmanıza gerek kalmadan sınavınızı hazırlayıp PDF ya da Word indirebilirsiniz. Ayrıca kolaylıkla online test yayımlayabilir ve sınava giren öğrencilerin test sonuçlarını görüntüleyebilirsiniz.">
+<meta property="og:title" content="SınıfPro — Öğretmenler için Kolay Yazılı Hazırlama Aracı">
+<meta property="og:description" content="Öğretmenler için kolay yazılı oluşturma aracıdır. Word programını kullanmanıza gerek kalmadan sınavınızı hazırlayıp PDF ya da Word indirebilirsiniz.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kolayyazili.com">
+<link rel="icon" href="<?= SITE_URL ?>/assets/images/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/app.css">
 <style>
 .btn-google {
@@ -57,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="auth-wrapper">
     <div class="auth-box">
         <div class="auth-logo">
-            <div class="logo-icon">🎓</div>
+            <img src="<?= SITE_URL ?>/assets/images/logo-icon.svg" alt="SınıfPro" width="64" height="64" style="margin-bottom:4px;">
             <h1>SınıfPro</h1>
             <p>Öğretmenler için sınav & soru yönetim sistemi</p>
         </div>
@@ -82,11 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         <div style="text-align:center;margin-top:20px;color:var(--text-muted);font-size:13px;">
             Hesabınız yok mu? <a href="<?= SITE_URL ?>/register.php" style="color:var(--primary);font-weight:600;">Kayıt Ol</a>
-        </div>
-        <div style="margin-top:20px;padding:14px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--text-muted);">
-            <strong>Demo hesaplar:</strong><br>
-            Ücretsiz: demo@sinifpro.com / 123456<br>
-            Premium: premium@sinifpro.com / 123456
         </div>
     </div>
 </div>
