@@ -48,26 +48,56 @@ foreach ($questions as $q) {
 
 <div class="topbar">
     <h2>❓ Sorularım <?= $currentUnit ? '— ' . sanitize($currentUnit['name']) : '' ?></h2>
-    <button class="btn btn-primary" onclick="openAddModal()">+ Yeni Soru</button>
+    <?php if ($unitId): ?>
+    <div style="display:flex;gap:8px;">
+        <a href="units.php?class_id=<?= $currentUnit['class_id'] ?? '' ?>" class="btn btn-secondary">← Üniteler</a>
+        <button class="btn btn-primary" onclick="openAddModal()">+ Yeni Soru</button>
+    </div>
+    <?php endif; ?>
 </div>
 
 <div class="content-area">
 
-<!-- FİLTRE -->
-<div style="margin-bottom:20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-    <label style="font-weight:600;font-size:13px;">Ünite:</label>
-    <a href="questions.php" class="btn btn-sm <?= !$unitId ? 'btn-primary' : 'btn-secondary' ?>">Tümü</a>
-    <?php foreach ($allUnits as $u): ?>
-    <a href="questions.php?unit_id=<?= $u['id'] ?>" class="btn btn-sm <?= $unitId==$u['id'] ? 'btn-primary' : 'btn-secondary' ?>">
-        <?= sanitize($u['name']) ?> <span style="opacity:.6;font-size:11px;">(<?= sanitize($u['class_name']) ?>)</span>
+<?php if (!$unitId): ?>
+<!-- ÜNİTE SEÇİM EKRANI -->
+<?php if (empty($allUnits)): ?>
+<div class="empty-state">
+    <div class="icon">📚</div>
+    <h3>Henüz ünite yok</h3>
+    <p>Önce bir ünite oluşturun</p>
+    <a href="units.php" class="btn btn-primary" style="margin-top:16px;">📚 Ünitelere Git</a>
+</div>
+<?php else:
+    // Üniteleri sınıfa göre grupla
+    $unitsByClass = [];
+    foreach ($allUnits as $u) {
+        $unitsByClass[$u['class_name']][] = $u;
+    }
+?>
+<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;">Soruları görmek için bir ünite seçin:</p>
+<?php foreach ($unitsByClass as $className => $classUnits): ?>
+<div style="margin-bottom:24px;">
+    <div style="font-weight:700;font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);">
+        🏫 <?= sanitize($className) ?>
+    </div>
+    <div class="grid grid-3">
+    <?php foreach ($classUnits as $u): ?>
+    <a href="questions.php?unit_id=<?= $u['id'] ?>" class="item-card" style="text-decoration:none;cursor:pointer;">
+        <div class="item-title">📚 <?= sanitize($u['name']) ?></div>
+        <div class="item-meta" style="margin-top:6px;">❓ <?= $db->query("SELECT COUNT(*) FROM questions WHERE unit_id={$u['id']}")->fetchColumn() ?> soru</div>
     </a>
     <?php endforeach; ?>
+    </div>
 </div>
+<?php endforeach; ?>
+<?php endif; ?>
 
+<?php else: ?>
+<!-- SORU LİSTESİ -->
 <?php if (empty($byUnit)): ?>
 <div class="empty-state">
     <div class="icon">❓</div>
-    <h3>Henüz soru yok</h3>
+    <h3>Bu ünitede henüz soru yok</h3>
     <p>İlk sorunuzu oluşturun</p>
     <button class="btn btn-primary" style="margin-top:16px;" onclick="openAddModal()">+ Soru Ekle</button>
 </div>
@@ -85,12 +115,38 @@ foreach ($questions as $q) {
     </div>
     <div class="card-body" style="padding:16px;">
     <?php foreach ($group['questions'] as $q): ?>
+    <?php if ($q['type'] === 'true_false'): ?>
+    <!-- D/Y SORU — inline format -->
+    <div class="question-item">
+        <div class="question-num"><?= $globalNum++ ?></div>
+        <div class="question-content">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <span class="question-title" style="margin:0;"><?= sanitize($q['title']) ?></span>
+                <span style="font-size:13px;font-weight:700;color:var(--text-muted);white-space:nowrap;">( D &nbsp;/&nbsp; Y )</span>
+                <span style="font-size:12px;padding:2px 8px;border-radius:4px;background:<?= $q['correct_opt']==='A' ? '#d1fae5' : '#fee2e2' ?>;color:<?= $q['correct_opt']==='A' ? '#065f46' : '#991b1b' ?>;font-weight:700;">
+                    Cevap: <?= $q['correct_opt']==='A' ? 'Doğru' : 'Yanlış' ?>
+                </span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap;">
+                <span class="badge badge-orange">✅ Doğru/Yanlış</span>
+                <span class="badge badge-green">💯 <?= $q['points'] ?> puan</span>
+            </div>
+        </div>
+        <div class="question-actions">
+            <button class="btn btn-sm btn-secondary" onclick="openEditModal(<?= htmlspecialchars(json_encode($q), ENT_QUOTES) ?>)" title="Düzenle">✏️</button>
+            <button class="btn btn-sm btn-success" onclick="openAddToExamModal(<?= $q['id'] ?>)" title="Sınava Ekle">📝</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteQuestion(<?= $q['id'] ?>)" title="Sil">🗑️</button>
+        </div>
+    </div>
+    <?php else: ?>
     <div class="question-item">
         <div class="question-num"><?= $globalNum++ ?></div>
         <div class="question-content">
             <div class="question-title"><?= sanitize($q['title']) ?></div>
             <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
-                <span class="badge <?= $q['type']==='test' ? 'badge-blue' : 'badge-purple' ?>"><?= $q['type']==='test' ? '🔵 Test' : '📝 Klasik' ?></span>
+                <span class="badge <?= $q['type']==='test' ? 'badge-blue' : 'badge-purple' ?>">
+                    <?= $q['type']==='test' ? '🔵 Test' : '📝 Klasik' ?>
+                </span>
                 <span class="badge badge-green">💯 <?= $q['points'] ?> puan</span>
             </div>
             <?php if ($q['type']==='test' && $q['option_a']): ?>
@@ -119,10 +175,12 @@ foreach ($questions as $q) {
             <button class="btn btn-sm btn-danger" onclick="deleteQuestion(<?= $q['id'] ?>)" title="Sil">🗑️</button>
         </div>
     </div>
+    <?php endif; // true_false / diğer ?>
     <?php endforeach; ?>
     </div>
 </div>
 <?php endforeach; endif; ?>
+<?php endif; ?>
 </div>
 
 <!-- ADD QUESTION MODAL -->
@@ -144,12 +202,15 @@ foreach ($questions as $q) {
             </div>
             <div class="form-group">
                 <label class="form-label">Soru Türü *</label>
-                <div style="display:flex;gap:12px;">
-                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border:1.5px solid var(--border);border-radius:8px;flex:1;transition:var(--transition);" id="type-test-label">
-                        <input type="radio" name="add-type" value="test" checked onchange="toggleQuestionType('test')"> 🔵 Test Sorusu
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border:1.5px solid var(--border);border-radius:8px;flex:1;min-width:130px;transition:var(--transition);" id="type-test-label">
+                        <input type="radio" name="add-type" value="test" checked onchange="toggleQuestionType('test')"> 🔵 Test
                     </label>
-                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border:1.5px solid var(--border);border-radius:8px;flex:1;transition:var(--transition);" id="type-klasik-label">
-                        <input type="radio" name="add-type" value="klasik" onchange="toggleQuestionType('klasik')"> 📝 Klasik Soru
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border:1.5px solid var(--border);border-radius:8px;flex:1;min-width:130px;transition:var(--transition);" id="type-klasik-label">
+                        <input type="radio" name="add-type" value="klasik" onchange="toggleQuestionType('klasik')"> 📝 Klasik
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border:1.5px solid var(--border);border-radius:8px;flex:1;min-width:130px;transition:var(--transition);" id="type-tf-label">
+                        <input type="radio" name="add-type" value="true_false" onchange="toggleQuestionType('true_false')"> ✅ Doğru/Yanlış
                     </label>
                 </div>
             </div>
@@ -179,6 +240,19 @@ foreach ($questions as $q) {
                 <div class="form-group">
                     <label class="form-label">Cevap Anahtarı (opsiyonel)</label>
                     <textarea id="add-answer" class="form-control" rows="3" placeholder="Beklenen cevabı yazın..."></textarea>
+                </div>
+            </div>
+            <div id="tf-options" style="display:none;">
+                <div class="form-group">
+                    <label class="form-label">Doğru Cevap *</label>
+                    <div style="display:flex;gap:12px;">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 20px;border:1.5px solid var(--border);border-radius:8px;flex:1;" id="tf-dogru-label">
+                            <input type="radio" name="add-tf-correct" value="A" checked onchange="highlightTf()"> ✓ Doğru
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 20px;border:1.5px solid var(--border);border-radius:8px;flex:1;" id="tf-yanlis-label">
+                            <input type="radio" name="add-tf-correct" value="B" onchange="highlightTf()"> ✗ Yanlış
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -212,7 +286,7 @@ foreach ($questions as $q) {
             </div>
             <div class="form-group">
                 <label class="form-label">Soru Türü</label>
-                <input type="text" id="edit-type-display" class="form-control" readonly style="background:var(--bg);">
+                <input type="text" id="edit-type-display" class="form-control" readonly style="background:var(--bg);cursor:default;">
                 <input type="hidden" id="edit-type">
             </div>
             <div class="form-group">
@@ -239,6 +313,19 @@ foreach ($questions as $q) {
                 <div class="form-group">
                     <label class="form-label">Cevap Anahtarı</label>
                     <textarea id="edit-answer" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+            <div id="edit-tf-options" style="display:none;">
+                <div class="form-group">
+                    <label class="form-label">Doğru Cevap</label>
+                    <div style="display:flex;gap:12px;">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 20px;border:1.5px solid var(--border);border-radius:8px;flex:1;" id="edit-tf-dogru-label">
+                            <input type="radio" name="edit-tf-correct" value="A" onchange="highlightEditTf()"> ✓ Doğru
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 20px;border:1.5px solid var(--border);border-radius:8px;flex:1;" id="edit-tf-yanlis-label">
+                            <input type="radio" name="edit-tf-correct" value="B" onchange="highlightEditTf()"> ✗ Yanlış
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -279,6 +366,28 @@ foreach ($questions as $q) {
 </div>
 
 <script>
+function toggleQuestionType(type) {
+    document.getElementById('test-options').style.display    = type === 'test'       ? '' : 'none';
+    document.getElementById('klasik-options').style.display  = type === 'klasik'     ? '' : 'none';
+    document.getElementById('tf-options').style.display      = type === 'true_false' ? '' : 'none';
+    // highlight selected radio label
+    const map = { test:'type-test-label', klasik:'type-klasik-label', true_false:'type-tf-label' };
+    ['type-test-label','type-klasik-label','type-tf-label'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.borderColor = (map[type] === id) ? 'var(--primary)' : 'var(--border)';
+    });
+    if (type === 'true_false') highlightTf();
+}
+function highlightTf() {
+    const val = document.querySelector('input[name="add-tf-correct"]:checked')?.value;
+    document.getElementById('tf-dogru-label').style.borderColor  = val === 'A' ? 'var(--primary)' : 'var(--border)';
+    document.getElementById('tf-yanlis-label').style.borderColor = val === 'B' ? 'var(--primary)' : 'var(--border)';
+}
+function highlightEditTf() {
+    const val = document.querySelector('input[name="edit-tf-correct"]:checked')?.value;
+    document.getElementById('edit-tf-dogru-label').style.borderColor  = val === 'A' ? 'var(--primary)' : 'var(--border)';
+    document.getElementById('edit-tf-yanlis-label').style.borderColor = val === 'B' ? 'var(--primary)' : 'var(--border)';
+}
 function setUnitAndOpenModal(unitId) {
     openAddModal();
     setTimeout(()=>{ document.getElementById('add-unit').value = unitId; }, 100);
@@ -289,24 +398,40 @@ function openAddModal() {
     setTimeout(()=>window.location='units.php',1200);
     return;
     <?php endif; ?>
+    // Reset to 'test' type
+    document.querySelector('input[name="add-type"][value="test"]').checked = true;
+    toggleQuestionType('test');
+    // Seçili üniteyi otomatik seç
+    <?php if ($unitId): ?>
+    setTimeout(()=>{ document.getElementById('add-unit').value = '<?= $unitId ?>'; }, 50);
+    <?php endif; ?>
     openModal('modal-add');
 }
 function openEditModal(q) {
     document.getElementById('edit-id').value      = q.id;
     document.getElementById('edit-unit').value    = q.unit_id;
     document.getElementById('edit-type').value    = q.type;
-    document.getElementById('edit-type-display').value = q.type === 'test' ? '🔵 Test Sorusu' : '📝 Klasik Soru';
+    const typeLabels = { test:'🔵 Test Sorusu', klasik:'📝 Klasik Soru', true_false:'✅ Doğru/Yanlış' };
+    document.getElementById('edit-type-display').value = typeLabels[q.type] || q.type;
     document.getElementById('edit-title').value   = q.title;
     document.getElementById('edit-points').value  = q.points;
+
+    document.getElementById('edit-test-options').style.display   = 'none';
+    document.getElementById('edit-klasik-options').style.display = 'none';
+    document.getElementById('edit-tf-options').style.display     = 'none';
+
     if (q.type === 'test') {
         document.getElementById('edit-test-options').style.display = '';
-        document.getElementById('edit-klasik-options').style.display = 'none';
         ['a','b','c','d','e'].forEach(k => {
             document.getElementById('edit-opt-'+k).value = q['option_'+k] || '';
         });
         document.getElementById('edit-correct').value = q.correct_opt || '';
+    } else if (q.type === 'true_false') {
+        document.getElementById('edit-tf-options').style.display = '';
+        const val = q.correct_opt === 'B' ? 'B' : 'A';
+        document.querySelectorAll('input[name="edit-tf-correct"]').forEach(r => { r.checked = (r.value === val); });
+        highlightEditTf();
     } else {
-        document.getElementById('edit-test-options').style.display = 'none';
         document.getElementById('edit-klasik-options').style.display = '';
         document.getElementById('edit-answer').value = q.answer || '';
     }
@@ -333,6 +458,9 @@ async function addQuestion() {
         data.correct_opt = document.getElementById('add-correct').value;
         if (!data.option_a || !data.option_b || !data.option_c) { showToast('En az A,B,C şıkkını doldurun','error'); return; }
         if (!data.correct_opt) { showToast('Doğru cevabı seçin','error'); return; }
+    } else if (type === 'true_false') {
+        const tfChecked = document.querySelector('input[name="add-tf-correct"]:checked');
+        data.correct_opt = tfChecked ? tfChecked.value : 'A';
     } else {
         data.answer = document.getElementById('add-answer').value;
     }
@@ -355,6 +483,9 @@ async function updateQuestion() {
         data.option_d    = document.getElementById('edit-opt-d').value;
         data.option_e    = document.getElementById('edit-opt-e').value;
         data.correct_opt = document.getElementById('edit-correct').value;
+    } else if (type === 'true_false') {
+        const tfChecked = document.querySelector('input[name="edit-tf-correct"]:checked');
+        data.correct_opt = tfChecked ? tfChecked.value : 'A';
     } else {
         data.answer = document.getElementById('edit-answer').value;
     }

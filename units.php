@@ -35,24 +35,47 @@ $units = $stmt->fetchAll();
 
 <div class="topbar">
     <h2>📚 Ünitelerim <?= $currentClass ? '— ' . sanitize($currentClass['name']) : '' ?></h2>
-    <button class="btn btn-primary" onclick="openAddModal()">+ Yeni Ünite</button>
+    <?php if ($classId): ?>
+    <div style="display:flex;gap:8px;">
+        <a href="units.php" class="btn btn-secondary">← Sınıflar</a>
+        <button class="btn btn-primary" onclick="openAddModal()">+ Yeni Ünite</button>
+    </div>
+    <?php endif; ?>
 </div>
 
 <div class="content-area">
 
-<!-- FİLTRE -->
-<div style="margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-    <label style="font-weight:600;font-size:13px;">Sınıfa göre filtrele:</label>
-    <a href="units.php" class="btn btn-sm <?= !$classId ? 'btn-primary' : 'btn-secondary' ?>">Tümü</a>
-    <?php foreach ($allClasses as $c): ?>
-    <a href="units.php?class_id=<?= $c['id'] ?>" class="btn btn-sm <?= $classId==$c['id'] ? 'btn-primary' : 'btn-secondary' ?>"><?= sanitize($c['name']) ?></a>
-    <?php endforeach; ?>
+<?php if (!$classId): ?>
+<!-- SINIF SEÇİM EKRANI -->
+<?php if (empty($allClasses)): ?>
+<div class="empty-state">
+    <div class="icon">🏫</div>
+    <h3>Henüz sınıf yok</h3>
+    <p>Önce bir sınıf oluşturun</p>
+    <a href="classes.php" class="btn btn-primary" style="margin-top:16px;">+ Sınıf Ekle</a>
 </div>
+<?php else: ?>
+<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;">Üniteleri görmek için bir sınıf seçin:</p>
+<div class="grid grid-3">
+<?php foreach ($allClasses as $c):
+    $uCount = $db->prepare("SELECT COUNT(*) FROM units WHERE class_id=? AND user_id=?");
+    $uCount->execute([$c['id'], $uid]);
+    $uCount = (int)$uCount->fetchColumn();
+?>
+<a href="units.php?class_id=<?= $c['id'] ?>" class="item-card" style="text-decoration:none;cursor:pointer;">
+    <div class="item-title">🏫 <?= sanitize($c['name']) ?></div>
+    <div class="item-meta" style="margin-top:6px;">📚 <?= $uCount ?> ünite</div>
+</a>
+<?php endforeach; ?>
+</div>
+<?php endif; ?>
 
+<?php else: ?>
+<!-- ÜNİTE LİSTESİ -->
 <?php if (empty($units)): ?>
 <div class="empty-state">
     <div class="icon">📚</div>
-    <h3>Henüz ünite yok</h3>
+    <h3>Bu sınıfta henüz ünite yok</h3>
     <p>İlk ünitenizi oluşturun</p>
     <button class="btn btn-primary" style="margin-top:16px;" onclick="openAddModal()">+ Ünite Ekle</button>
 </div>
@@ -63,7 +86,6 @@ $units = $stmt->fetchAll();
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
         <div>
             <div class="item-title"><?= sanitize($u['name']) ?></div>
-            <div class="item-meta">🏫 <?= sanitize($u['class_name']) ?></div>
             <div class="item-meta" style="margin-top:4px;">❓ <?= $u['q_count'] ?> soru</div>
         </div>
     </div>
@@ -76,6 +98,8 @@ $units = $stmt->fetchAll();
 <?php endforeach; ?>
 </div>
 <?php endif; ?>
+<?php endif; ?>
+
 </div>
 
 <!-- ADD MODAL -->

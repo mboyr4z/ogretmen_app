@@ -12,6 +12,7 @@ $initial = mb_substr($user['name'], 0, 1, 'UTF-8');
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= isset($pageTitle) ? sanitize($pageTitle) . ' — ' : '' ?>SınıfPro</title>
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/app.css">
+<link rel="icon" href="<?= SITE_URL ?>/favicon.ico" type="image/png">
 <link rel="icon" href="<?= SITE_URL ?>/assets/images/favicon.svg" type="image/svg+xml">
 </head>
 <body>

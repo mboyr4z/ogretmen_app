@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta property="og:description" content="Öğretmenler için kolay yazılı oluşturma aracıdır. Word programını kullanmanıza gerek kalmadan sınavınızı hazırlayıp PDF ya da Word indirebilirsiniz.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kolayyazili.com">
+<link rel="icon" href="<?= SITE_URL ?>/favicon.ico" type="image/png">
 <link rel="icon" href="<?= SITE_URL ?>/assets/images/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/app.css">
 <style>

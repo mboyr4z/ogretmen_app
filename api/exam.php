@@ -9,25 +9,35 @@ $db     = getDB();
 switch ($action) {
     case 'add':
         if (!checkLimit('exam', $uid)) jsonResponse(['error'=>'Sınav limitine ulaştınız. Premium üyeliğe geçin!'], 403);
-        $name     = trim($_POST['name'] ?? '');
-        $classId  = (int)($_POST['class_id'] ?? 0) ?: null;
-        $desc     = trim($_POST['description'] ?? '') ?: null;
-        $duration = (int)($_POST['duration'] ?? 0) ?: null;
+        $name       = trim($_POST['name'] ?? '');
+        $classId    = (int)($_POST['class_id'] ?? 0) ?: null;
+        $desc       = trim($_POST['description'] ?? '') ?: null;
+        $duration   = (int)($_POST['duration'] ?? 0) ?: null;
+        $template   = trim($_POST['template'] ?? 'karisik-duz');
+        $schoolName = trim($_POST['school_name'] ?? '') ?: null;
+        $acYear     = trim($_POST['academic_year'] ?? '') ?: null;
+        $period     = max(1, min(2, (int)($_POST['period'] ?? 1)));
+        $examNum    = max(1, min(3, (int)($_POST['exam_number'] ?? 1)));
         if (!$name) jsonResponse(['error'=>'Sınav adı boş olamaz'], 400);
-        $stmt = $db->prepare("INSERT INTO exams (user_id,class_id,name,description,duration) VALUES (?,?,?,?,?)");
-        $stmt->execute([$uid,$classId,$name,$desc,$duration]);
+        $stmt = $db->prepare("INSERT INTO exams (user_id,class_id,name,description,duration,template,school_name,academic_year,period,exam_number) VALUES (?,?,?,?,?,?,?,?,?,?)");
+        $stmt->execute([$uid,$classId,$name,$desc,$duration,$template,$schoolName,$acYear,$period,$examNum]);
         jsonResponse(['success'=>true, 'id'=>$db->lastInsertId()]);
         break;
 
     case 'update':
-        $id       = (int)($_POST['id'] ?? 0);
-        $name     = trim($_POST['name'] ?? '');
-        $classId  = (int)($_POST['class_id'] ?? 0) ?: null;
-        $desc     = trim($_POST['description'] ?? '') ?: null;
-        $duration = (int)($_POST['duration'] ?? 0) ?: null;
+        $id         = (int)($_POST['id'] ?? 0);
+        $name       = trim($_POST['name'] ?? '');
+        $classId    = (int)($_POST['class_id'] ?? 0) ?: null;
+        $desc       = trim($_POST['description'] ?? '') ?: null;
+        $duration   = (int)($_POST['duration'] ?? 0) ?: null;
+        $template   = trim($_POST['template'] ?? 'karisik-duz');
+        $schoolName = trim($_POST['school_name'] ?? '') ?: null;
+        $acYear     = trim($_POST['academic_year'] ?? '') ?: null;
+        $period     = max(1, min(2, (int)($_POST['period'] ?? 1)));
+        $examNum    = max(1, min(3, (int)($_POST['exam_number'] ?? 1)));
         if (!$name) jsonResponse(['error'=>'Sınav adı boş olamaz'], 400);
-        $stmt = $db->prepare("UPDATE exams SET name=?,class_id=?,description=?,duration=? WHERE id=? AND user_id=?");
-        $stmt->execute([$name,$classId,$desc,$duration,$id,$uid]);
+        $stmt = $db->prepare("UPDATE exams SET name=?,class_id=?,description=?,duration=?,template=?,school_name=?,academic_year=?,period=?,exam_number=? WHERE id=? AND user_id=?");
+        $stmt->execute([$name,$classId,$desc,$duration,$template,$schoolName,$acYear,$period,$examNum,$id,$uid]);
         jsonResponse(['success'=>true]);
         break;
 

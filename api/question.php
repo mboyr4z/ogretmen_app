@@ -10,7 +10,7 @@ switch ($action) {
     case 'add':
         if (!checkLimit('question', $uid)) jsonResponse(['error'=>'Soru limitine ulaştınız. Premium üyeliğe geçin!'], 403);
         $unitId  = (int)($_POST['unit_id'] ?? 0);
-        $type    = in_array($_POST['type']??'', ['test','klasik']) ? $_POST['type'] : 'test';
+        $type    = in_array($_POST['type']??'', ['test','klasik','true_false']) ? $_POST['type'] : 'test';
         $title   = trim($_POST['title'] ?? '');
         $points  = max(1, min(100, (int)($_POST['points'] ?? 10)));
         if (!$title || !$unitId) jsonResponse(['error'=>'Eksik alan'], 400);
@@ -24,7 +24,12 @@ switch ($action) {
         $optC = trim($_POST['option_c'] ?? '');
         $optD = trim($_POST['option_d'] ?? '') ?: null;
         $optE = trim($_POST['option_e'] ?? '') ?: null;
-        $correct = in_array($_POST['correct_opt']??'',['A','B','C','D','E']) ? $_POST['correct_opt'] : null;
+        $correct = in_array($_POST['correct_opt']??'',['A','B','C','D','E','D_tf','Y_tf']) ? $_POST['correct_opt'] : null;
+        if ($type === 'true_false') {
+            $optA = 'Doğru'; $optB = 'Yanlış';
+            $optC = null; $optD = null; $optE = null;
+            $correct = in_array($_POST['correct_opt']??'',['A','B']) ? $_POST['correct_opt'] : 'A';
+        }
         $answer  = trim($_POST['answer'] ?? '') ?: null;
         $content = $title; // content = title for now
 
@@ -36,7 +41,7 @@ switch ($action) {
     case 'update':
         $id      = (int)($_POST['id'] ?? 0);
         $unitId  = (int)($_POST['unit_id'] ?? 0);
-        $type    = in_array($_POST['type']??'', ['test','klasik']) ? $_POST['type'] : 'test';
+        $type    = in_array($_POST['type']??'', ['test','klasik','true_false']) ? $_POST['type'] : 'test';
         $title   = trim($_POST['title'] ?? '');
         $points  = max(1, min(100, (int)($_POST['points'] ?? 10)));
         if (!$title) jsonResponse(['error'=>'Soru metni boş olamaz'], 400);
@@ -47,6 +52,11 @@ switch ($action) {
         $optD = trim($_POST['option_d'] ?? '') ?: null;
         $optE = trim($_POST['option_e'] ?? '') ?: null;
         $correct = in_array($_POST['correct_opt']??'',['A','B','C','D','E']) ? $_POST['correct_opt'] : null;
+        if ($type === 'true_false') {
+            $optA = 'Doğru'; $optB = 'Yanlış';
+            $optC = null; $optD = null; $optE = null;
+            $correct = in_array($_POST['correct_opt']??'',['A','B']) ? $_POST['correct_opt'] : 'A';
+        }
         $answer  = trim($_POST['answer'] ?? '') ?: null;
 
         $stmt = $db->prepare("UPDATE questions SET unit_id=?,type=?,title=?,content=?,option_a=?,option_b=?,option_c=?,option_d=?,option_e=?,correct_opt=?,answer=?,points=? WHERE id=? AND user_id=?");
