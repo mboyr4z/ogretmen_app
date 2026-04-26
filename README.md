@@ -8,9 +8,12 @@
 
 ## Ekran Görüntüleri
 
-![Ekran 1](screenshots/1.png)
-![Ekran 2](screenshots/2.png)
-![Ekran 3](screenshots/3.png)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/cd0f765b-3d04-4369-adbd-4474a81e4541" />
+
+<br> 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/01886e7e-5d21-41dd-9c24-a906e22878b7" />
+
+
 
 ---
 
