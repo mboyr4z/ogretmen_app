@@ -52,12 +52,7 @@ $initial = mb_substr($user['name'], 0, 1, 'UTF-8');
         </div>
 <div class="nav-section">
             <div class="nav-section-title">Hesap</div>
-            <?php if (!$premium): ?>
-            <a href="<?= SITE_URL ?>/premium.php" class="nav-item" data-page="premium.php">
-                <span class="icon">⭐</span> Premium Yap
-            </a>
-            <?php endif; ?>
-            <a href="<?= SITE_URL ?>/profile.php" class="nav-item" data-page="profile.php">
+                <a href="<?= SITE_URL ?>/profile.php" class="nav-item" data-page="profile.php">
                 <span class="icon">👤</span> Profilim
             </a>
             <a href="<?= SITE_URL ?>/logout.php" class="nav-item">
@@ -70,11 +65,6 @@ $initial = mb_substr($user['name'], 0, 1, 'UTF-8');
             <div class="user-avatar"><?= $initial ?></div>
             <div class="user-info">
                 <div class="name"><?= sanitize($user['name']) ?></div>
-                <?php if ($premium): ?>
-                    <span class="badge-premium">⭐ Premium</span>
-                <?php else: ?>
-                    <span class="badge-free">Ücretsiz</span>
-                <?php endif; ?>
             </div>
         </div>
     </div>

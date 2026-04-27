@@ -26,10 +26,10 @@ define('SITE_URL', $_isLocal
 // ============================================
 define('SITE_NAME', 'SınıfPro');
 
-define('FREE_MAX_CLASSES',    3);
-define('FREE_MAX_UNITS',     10);
-define('FREE_MAX_QUESTIONS', 50);
-define('FREE_MAX_EXAMS',      5);
+define('FREE_MAX_CLASSES',    0);
+define('FREE_MAX_UNITS',      0);
+define('FREE_MAX_QUESTIONS',  0);
+define('FREE_MAX_EXAMS',      0);
 
 define('PREMIUM_MAX_CLASSES',   0);
 define('PREMIUM_MAX_UNITS',     0);

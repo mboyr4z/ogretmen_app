@@ -13,9 +13,6 @@ foreach (['classes','units','questions','exams'] as $t) {
     $stats[$t] = (int)$s->fetchColumn();
 }
 
-// Limit bilgisi
-$limits = getLimitInfo($uid);
-
 // Son sorular
 $sq = $db->prepare("SELECT q.*, u.name AS unit_name FROM questions q JOIN units u ON u.id=q.unit_id WHERE q.user_id=? ORDER BY q.created_at DESC LIMIT 5");
 $sq->execute([$uid]);
@@ -35,16 +32,6 @@ $recentE = $se->fetchAll();
 </div>
 
 <div class="content-area">
-
-<?php if (!$premium): ?>
-<div class="premium-banner">
-    <div>
-        <h3>⭐ Premium'a Geçin!</h3>
-        <p>Sınırsız sınıf, ünite, soru ve sınav oluşturun. PDF & Word export özelliğinden tam faydalanın.</p>
-    </div>
-    <a href="premium.php" class="btn-premium">Premium Ol →</a>
-</div>
-<?php endif; ?>
 
 <!-- STATS -->
 <div class="grid grid-3" style="margin-bottom:24px;">
@@ -78,31 +65,14 @@ $recentE = $se->fetchAll();
     </div>
 </div>
 
-<!-- LIMIT BARS + RECENT -->
-<div class="grid grid-2" style="margin-bottom:24px;align-items:start;">
-    <!-- Kullanım Limitleri -->
-    <div class="card">
-        <div class="card-header">
-            <span class="card-title">📊 Kullanım Limitleri</span>
-            <span class="badge <?= $premium ? 'badge-yellow' : 'badge-blue' ?>"><?= $premium ? '⭐ Premium' : 'Ücretsiz' ?></span>
-        </div>
-        <div class="card-body">
-            <div id="lbar-classes"></div>
-            <div id="lbar-units"></div>
-            <div id="lbar-questions"></div>
-            <div id="lbar-exams"></div>
-        </div>
-    </div>
-
-    <!-- Hızlı Erişim -->
-    <div class="card">
-        <div class="card-header"><span class="card-title">⚡ Hızlı Erişim</span></div>
-        <div class="card-body" style="display:grid;gap:10px;">
-            <a href="classes.php" class="btn btn-secondary"><span>🏫</span> Sınıflarımı Yönet</a>
-            <a href="units.php"   class="btn btn-secondary"><span>📚</span> Üniteleri Yönet</a>
-            <a href="questions.php" class="btn btn-secondary"><span>❓</span> Soruları Yönet</a>
-            <a href="exams.php"   class="btn btn-secondary"><span>📝</span> Sınavları Yönet</a>
-        </div>
+<!-- HIZLI ERİŞİM -->
+<div class="card" style="margin-bottom:24px;">
+    <div class="card-header"><span class="card-title">⚡ Hızlı Erişim</span></div>
+    <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+        <a href="classes.php" class="btn btn-secondary"><span>🏫</span> Sınıflarımı Yönet</a>
+        <a href="units.php"   class="btn btn-secondary"><span>📚</span> Üniteleri Yönet</a>
+        <a href="questions.php" class="btn btn-secondary"><span>❓</span> Soruları Yönet</a>
+        <a href="exams.php"   class="btn btn-secondary"><span>📝</span> Sınavları Yönet</a>
     </div>
 </div>
 
@@ -172,12 +142,5 @@ $recentE = $se->fetchAll();
 
 </div><!-- .content-area -->
 
-<script>
-const limits = <?= json_encode($limits, JSON_UNESCAPED_UNICODE) ?>;
-renderLimitBar('lbar-classes',   '🏫 Sınıf',  limits.counts.classes,   limits.limits.classes);
-renderLimitBar('lbar-units',     '📚 Ünite',  limits.counts.units,     limits.limits.units);
-renderLimitBar('lbar-questions', '❓ Soru',   limits.counts.questions, limits.limits.questions);
-renderLimitBar('lbar-exams',     '📝 Sınav',  limits.counts.exams,     limits.limits.exams);
-</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

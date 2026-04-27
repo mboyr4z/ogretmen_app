@@ -45,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="card">
     <div class="card-header">
         <span class="card-title">Hesap Bilgileri</span>
-        <span class="badge <?= $premium ? 'badge-yellow':'badge-blue' ?>"><?= $premium ? '⭐ Premium':'Ücretsiz' ?></span>
     </div>
     <div class="card-body">
         <form method="POST">
@@ -72,32 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<div class="card" style="margin-top:20px;">
-    <div class="card-header"><span class="card-title">📊 Kullanım İstatistikleri</span></div>
-    <div class="card-body" style="padding:16px 24px;">
-        <?php
-        $db = getDB();
-        $uid2 = $_SESSION['user_id'];
-        $limits = getLimitInfo($uid2);
-        ?>
-        <div id="p-lbar-classes"></div>
-        <div id="p-lbar-units"></div>
-        <div id="p-lbar-questions"></div>
-        <div id="p-lbar-exams"></div>
-        <?php if (!$premium): ?>
-        <a href="premium.php" class="btn btn-primary btn-block" style="margin-top:12px;">⭐ Premium'a Geç</a>
-        <?php endif; ?>
-    </div>
 </div>
-
-</div>
-
-<script>
-const limits = <?= json_encode($limits, JSON_UNESCAPED_UNICODE) ?>;
-renderLimitBar('p-lbar-classes',   '🏫 Sınıf',  limits.counts.classes,   limits.limits.classes);
-renderLimitBar('p-lbar-units',     '📚 Ünite',  limits.counts.units,     limits.limits.units);
-renderLimitBar('p-lbar-questions', '❓ Soru',   limits.counts.questions, limits.limits.questions);
-renderLimitBar('p-lbar-exams',     '📝 Sınav',  limits.counts.exams,     limits.limits.exams);
-</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

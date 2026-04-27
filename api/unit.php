@@ -8,7 +8,6 @@ $db     = getDB();
 
 switch ($action) {
     case 'add':
-        if (!checkLimit('unit', $uid)) jsonResponse(['error'=>'Ünite limitine ulaştınız. Premium üyeliğe geçin!'], 403);
         $classId = (int)($_POST['class_id'] ?? 0);
         $name    = trim($_POST['name'] ?? '');
         if (!$name || !$classId) jsonResponse(['error'=>'Eksik alan'], 400);

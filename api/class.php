@@ -8,7 +8,6 @@ $db     = getDB();
 
 switch ($action) {
     case 'add':
-        if (!checkLimit('class', $uid)) jsonResponse(['error'=>'Sınıf limitine ulaştınız. Premium üyeliğe geçin!'], 403);
         $name  = trim($_POST['name'] ?? '');
         $grade = trim($_POST['grade'] ?? '') ?: null;
         if (!$name) jsonResponse(['error'=>'Sınıf adı boş olamaz'], 400);

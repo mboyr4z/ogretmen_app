@@ -8,7 +8,6 @@ $db     = getDB();
 
 switch ($action) {
     case 'add':
-        if (!checkLimit('question', $uid)) jsonResponse(['error'=>'Soru limitine ulaştınız. Premium üyeliğe geçin!'], 403);
         $unitId  = (int)($_POST['unit_id'] ?? 0);
         $type    = in_array($_POST['type']??'', ['test','klasik','true_false']) ? $_POST['type'] : 'test';
         $title   = trim($_POST['title'] ?? '');
